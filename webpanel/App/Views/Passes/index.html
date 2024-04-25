@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block pre_body %}
-  <br><center><h1><strong>NOAA APT and Meteor LRPT Satellite Receiver</strong></h1></center><br>
+    <center><font color="black"><h1><strong><font face="Times New Roman" size="6">NOAA APT and Meteor LRPT Weather Satellite Receiver</font></strong></h1></font></center>
   <div id="instruments" class="flex-container">
     {% if constant('Config\\Config::ENABLE_SATVIS') == 'true' %}
       <div id="satvis" class="d-none d-sm-block flex-child">
@@ -22,11 +22,13 @@
 {% endblock %}
 
 {% block body %}
-<center>
-      <meta http-equiv="refresh" content="300" url="https://www.timeanddate.com/scripts/sunmap.php">
-      <img src="https://www.timeanddate.com/scripts/sunmap.php?iso=&amp;earth=1" width="100%" height="100%">
-      <meta img="sunmap.php" src-equiv="refresh" content="300">
-    </center>
+<center><script>
+var norad_n2yo = '57166|METEOR M2-3,59051|METEOR M2-4,25338|NOAA-15,28654|NOAA-18,33591|NOAA-19';
+var size_n2yo = 'large';
+var map_n2yo = '5';
+var allpasses_n2yo = '1';
+</script>
+<script src="assets/js/widget-tracker.js"></script></center>
   <table class="table table-bordered table-sm table-striped" id="passes">
     <thead class="thead-dark">
       <tr class="text-center">
@@ -111,15 +113,16 @@
       {% endif %}
     </tbody>
   </table>
-
   <br>
-  <center>
-  <h1>Coronal Mass Ejection Activity</h1>
-  <br>
+ <center><font color="black"><h4><strong><font face="Times New Roman" size="6">Coronal Mass Ejection Activity</font></strong></h4></font>
   <img src="https://sohowww.nascom.nasa.gov/data/LATEST/current_c2.gif" height=300 style="margin-right=2em; margin-bottom:2em;">
   <img src="https://sohowww.nascom.nasa.gov/data/LATEST/current_c3.gif" height=300 style="margin-right=2em; margin-bottom:2em;">
   <img src="https://stereo.gsfc.nasa.gov/beacon/latest_512/ahead_cor2_latest.jpg" height=300 style="margin-right=2em; margin-bottom:2em;">
   </center>
+  <center><meta http-equiv="refresh" content="300" url="https://www.timeanddate.com/scripts/sunmap.php">
+      <img src="https://www.timeanddate.com/scripts/sunmap.php?iso=&amp;earth=1" width="100%" height="100%">
+      <meta img="sunmap.php" src-equiv="refresh" content="300">
+    </center>
 
 {% endblock %}
 
