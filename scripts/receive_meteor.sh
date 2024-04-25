@@ -120,6 +120,13 @@ else
     bias_tee_option=""
 fi
 
+if [ "$METEOR_DECODER" == "satdump" ]; then
+  finish_processing="--finish_processing"
+else
+  finish_processing=""
+fi
+
+
 # check if there is enough free memory to store pass on RAM
 FREE_MEMORY=$(free -m | grep Mem | awk '{print $7}')
 if [ "$FREE_MEMORY" -lt $METEOR_M2_MEMORY_THRESHOLD ]; then
@@ -224,7 +231,7 @@ if [[ "$METEOR_DECODER" == "meteordemod" ]]; then
   fi
 elif [[ "$METEOR_DECODER" == "satdump" ]]; then
   log "Running SatDump to demodulate OQPSK file, rectify (spread) images, create heat map and composites and convert them to JPG" "INFO"
-  $SATDUMP meteor_m2-x_lrpt${mode} cadu "${RAMFS_AUDIO_BASE}.cadu" . >> $NOAA_LOG 2>&1
+  $SATDUMP meteor_m2-x_lrpt${mode} cadu "${RAMFS_AUDIO_BASE}.cadu" . -fill_missing >> $NOAA_LOG 2>&1
 
   find MSU-MR/ -type f ! -name "*projected*" ! -name "*corrected*" -delete
 
@@ -319,6 +326,10 @@ if [ -n "$(find /srv/images -maxdepth 1 -type f -name "$(basename "$IMAGE_FILE_B
   push_annotation="${push_annotation} | ${PASS_DIRECTION}"
 
   meteor_suffixes=(
+      '-MSA_corrected.jpg'
+      '-MSA_projected.jpg'
+      '-MCIR_corrected.jpg'
+      '-MCIR_projected.jpg'
       '-321_corrected.jpg'
       '-321_projected.jpg'
       '-equidistant_321.jpg'

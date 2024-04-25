@@ -49,27 +49,17 @@ if [ "$OBJ_NAME" == "METEOR-M2 4" ]; then
 fi
 
 echo "$OBJ_NAME"
-echo "$TLE_FILE"
 
 # come up with prediction start/end timings for pass
 predict_start=$($PREDICT -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | head -1)
 predict_end=$($PREDICT   -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | tail -1)
-echo "predict end $predict_end"
-echo "predict $PREDICT"
-echo "TLE FLE $TLE_FILE"
-echo "obj name $OBJ_NAME"
-echo "start time $START_TIME_MS"
 max_elev=$($PREDICT      -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | awk -v max=0 '{if($5>max){max=$5}}END{print max}')
-echo "max_elev $max_elev"
 #max_elev=60
 
-echo "max_elev $max_elev"
 azimuth_at_max=$($PREDICT   -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | awk -v max=0 -v az=0 '{if($5>max){max=$5;az=$6}}END{print az}')
 end_epoch_time=$(echo "${predict_end}" | cut -d " " -f 1)
-echo "end epoch $end_epoch_time ? time"
 starting_azimuth=$(echo "${predict_start}" | awk '{print $6}')
 
-echo "date time $(date --date="${end_epoch_time}")"
 # get and schedule passes for user-defined days
 while [ "$(date --date="@${end_epoch_time}" +"%s")" -le "${END_TIME_MS}" ]; do
   start_datetime=$(echo "$predict_start" | cut -d " " -f 3-4)
