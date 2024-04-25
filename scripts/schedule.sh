@@ -1,5 +1,7 @@
 #!/bin/bash
 #
+# https://github.com/reynico/raspberry-noaa/issues/86
+#
 # Purpose: High-level scheduling script - schedules all desired satellite
 #          and orbital captures.
 #
@@ -57,12 +59,13 @@ if [ "${update_tle}" == "1" ]; then
     exit
   else
     log "Scheduler resolved TLE endpoint in ${counter} seconds" "INFO"
+    wget -r "http://${tle_addr}/NORAD/elements/weather.txt" --no-check-        certificate -O "${WEATHER_TXT}" >> $NOAA_LOG 2>&1
+    wget -r "http://${tle_addr}/NORAD/elements/amateur.txt" --no-check-        certificate -O "${AMATEUR_TXT}" >> $NOAA_LOG 2>&1
   fi
 
   # get the txt files for orbit information
-  log "Downloading new TLE files from source" "INFO"
-  wget -r "http://${tle_addr}/NORAD/elements/weather.txt" --no-check-certificate -O "${WEATHER_TXT}" >> $NOAA_LOG 2>&1
-  wget -r "http://${tle_addr}/NORAD/elements/amateur.txt" --no-check-certificate -O "${AMATEUR_TXT}" >> $NOAA_LOG 2>&1
+  #wget -r "http://${tle_addr}/NORAD/elements/weather.txt" --no-check-certificate -O "${WEATHER_TXT}" >> $NOAA_LOG 2>&1
+  #wget -r "http://${tle_addr}/NORAD/elements/amateur.txt" --no-check-certificate -O "${AMATEUR_TXT}" >> $NOAA_LOG 2>&1
   #wget -r "http://${tle_addr}/NORAD/elements/active.txt" --no-check-certificate -O "${ACTIVE_TXT}" >> $NOAA_LOG 2>&1
 
   log "Copying TLEs for SatDump" "INFO"
@@ -140,12 +143,16 @@ fi
 if [ "$NOAA_19_SCHEDULE" == "true" ]; then
   log "Scheduling NOAA 19 captures..." "INFO"
   $NOAA_HOME/scripts/schedule_captures.sh "NOAA 19" "receive_noaa.sh" $TLE_OUTPUT $start_time_ms $end_time_ms >> $NOAA_LOG 2>&1
+  echo "$TLE_OUTPUT [output],  $start_time_ms [start time], $end_time_ms [endtime]"
 fi
 if [ "$METEOR_M2_3_SCHEDULE" == "true" ]; then
+  echo "meteor_m2_3_scheduled for capture"
   log "Scheduling Meteor-M2 3 captures..." "INFO"
   $NOAA_HOME/scripts/schedule_captures.sh "METEOR-M2 3" "receive_meteor.sh" $TLE_OUTPUT $start_time_ms $end_time_ms >> $NOAA_LOG 2>&1
+  echo "$TLE_OUTPUT [output],  $start_time_ms [start time], $end_time_ms [endtime]"
 fi
 if [ "$METEOR_M2_4_SCHEDULE" == "true" ]; then
+  echo "meteor_m2_4_scheduled for capture"
   log "Scheduling Meteor-M2 4 captures..." "INFO"
   $NOAA_HOME/scripts/schedule_captures.sh "METEOR-M2 4" "receive_meteor.sh" $TLE_OUTPUT $start_time_ms $end_time_ms >> $NOAA_LOG 2>&1
 fi

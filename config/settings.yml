@@ -2,9 +2,9 @@
 # base station configurations
 #   latitude: south values are negative
 #   longitude: west values are negative
-latitude: 40.712776
-longitude: -74.005974
-altitude: 0.0
+latitude: 37.229572
+longitude: -80.413940
+altitude: 400.0
 
 #Website language settings
 #   lang_setting: see the 'webpanel/App/Lang' folder for available
@@ -14,7 +14,7 @@ lang_setting: en
 # ntp configurations
 #   ntp_server - if you have a local server (e.g. stratum1), you can use this setting
 #        to specify a hostname or ip address to communicate with the ntp server
-ntp_server: ''
+ntp_server: '129.6.15.28'
 
 # receiver settings
 #   receiver_type - the receiver type which program uses ('rtlsdr', 'airspy_mini', 'airspy_r2' or 'hackrf' or 'sdrplay' or 'mirisdr')
@@ -22,15 +22,18 @@ ntp_server: ''
 #   meteor_decoder - which receiver method to use (either 'meteordemod' or 'satdump')
 receiver_type: 'rtlsdr'
 
+# "avi" doesn't work with satdump in scripts
 noaa_decoder: 'wxtoimg'
+#noaa_decoder: 'satdump'
 meteor_decoder: 'meteordemod'
+#meteor_decoder: 'satdump'
 
 # test settings when running test scripts
 #   test_gain - gain to use for scanner test scripts
 #   test_sdr_device_id - device ID of the SDR device to be used for scanner test scripts
 #   test_enable_bias_tee - whether to enable bias tee when running scanner test scripts
 #   test_freq_offset - receiver frequency offset (PPM)
-test_gain: 29.7
+test_gain: 15.7
 test_sdr_device_id: 0
 test_enable_bias_tee: false
 test_freq_offset: 0
@@ -49,50 +52,53 @@ noaa_memory_threshold: 50
 meteor_m2_memory_threshold: 10
 
 select_best_overlapping_passes: true
-select_meteor_pass_over_noaa: true
+select_meteor_pass_over_noaa: false
+
+# https://github.com/jekhokie/raspberry-noaa-v2/discussions/405
+#
 
 noaa_15_schedule: true
 noaa_15_sdr_device_id: 0
 noaa_15_freq_offset: 0
 noaa_15_enable_bias_tee: false
-noaa_15_gain: 29.7
-noaa_15_sun_min_elevation: 6
-noaa_15_sat_min_elevation: 30
+noaa_15_gain: 30.0
+noaa_15_sun_min_elevation: 0
+noaa_15_sat_min_elevation: 35
 
 noaa_18_schedule: true
 noaa_18_sdr_device_id: 0
 noaa_18_freq_offset: 0
 noaa_18_enable_bias_tee: false
-noaa_18_gain: 29.7
-noaa_18_sun_min_elevation: 6
-noaa_18_sat_min_elevation: 30
+noaa_18_gain: 30.0
+noaa_18_sun_min_elevation: 0
+noaa_18_sat_min_elevation: 35
 
 noaa_19_schedule: true
 noaa_19_sdr_device_id: 0
 noaa_19_freq_offset: 0
 noaa_19_enable_bias_tee: false
-noaa_19_gain: 29.7
-noaa_19_sun_min_elevation: 6
-noaa_19_sat_min_elevation: 30
+noaa_19_gain: 30.0
+noaa_19_sun_min_elevation: 0
+noaa_19_sat_min_elevation: 35
 
 meteor_m2_3_schedule: true
 meteor_m2_3_sdr_device_id: 0
 meteor_m2_3_freq_offset: 0
 meteor_m2_3_enable_bias_tee: false
-meteor_m2_3_gain: 29.7
-meteor_m2_3_schedule_sun_min_elevation: -6
-meteor_m2_3_sun_min_elevation: 6
-meteor_m2_3_sat_min_elevation: 30
+meteor_m2_3_gain: 47.0
+meteor_m2_3_schedule_sun_min_elevation: -90
+meteor_m2_3_sun_min_elevation: 0
+meteor_m2_3_sat_min_elevation: 40
 meteor_m2_3_80k_interleaving: false
 
-meteor_m2_4_schedule: true
+meteor_m2_4_schedule: false
 meteor_m2_4_sdr_device_id: 0
 meteor_m2_4_freq_offset: 0
 meteor_m2_4_enable_bias_tee: false
-meteor_m2_4_gain: 29.7
-meteor_m2_4_schedule_sun_min_elevation: -6
-meteor_m2_4_sun_min_elevation: 6
-meteor_m2_4_sat_min_elevation: 30
+meteor_m2_4_gain: 40.0
+meteor_m2_4_schedule_sun_min_elevation: -90
+meteor_m2_4_sun_min_elevation: 0
+meteor_m2_4_sat_min_elevation: 40
 meteor_m2_4_80k_interleaving: false
 
 # how many days to schedule passes - note this MUST be an even integer,
@@ -102,20 +108,20 @@ meteor_m2_4_80k_interleaving: false
 # NOTE: If you want to set this value LOWER than a previously configured
 #       value, you must run the schedule script manually and pass the '-x' switch
 #       after re-running the ./install_and_upgrade.sh script to align the variables:
-#           ./scripts/schedule.sh -x
-days_to_schedule_passes: 7
+#           ./scripts/schedule.sh -x -t
+days_to_schedule_passes: 14
 
 # pruning capabilities - must be configured in cron (see documentation)
 #   delete_oldest_n - how many oldest captures to delete on each run
 #   delete_older_than_n - delete all images older than this many days
-delete_oldest_n: 0
-delete_older_than_n: 30
+delete_oldest_n: 3
+delete_older_than_n: 10
 
 # whether audio files should be deleted after images are created
 # if you choose to keep files, they will be automatically deleted after set number of days in delete_files_older_than_days (default is 3 days)
-delete_noaa_audio: true
-delete_meteor_audio: true
-delete_files_older_than_days: 3
+delete_noaa_audio: false
+delete_meteor_audio: false
+delete_files_older_than_days: 1
 
 # processing settings
 #   flip_meteor_image - whether the meteor image should be flipped
@@ -150,6 +156,9 @@ delete_files_older_than_days: 3
 #   noaa_thermal_temp_overlay_location - where to place the thermal map in images - valid options are:
 #        NorthWest, North, NorthEast, West, Center, East, SouthWest, South, SouthEast
 
+# noaa_daytime_enhancements
+# MSA MSA-precip MCIR MCIR-precip HVC-precip HVCT-precip HVC HVCT ZA therm sea CC HE HF MD BD MB JF JJ LC TA WV NO histeq
+#
 # noaa map configurations
 # http://usradioguy.com/wp-content/uploads/2020/05/wxtoimgcommand-line.pdf
 #
@@ -176,27 +185,27 @@ delete_files_older_than_days: 3
 #   noaa_map_state_border_color - color of state borders (Americas only)
 extend_for_annotation: true
 image_annotation_location: 'North'
-produce_polar_az_el_graph: false
+produce_polar_az_el_graph: true
 produce_polar_direction_graph: true
-ground_station_location: ''
-antenna_information: ''
+ground_station_location: 'Blacksburg'
+antenna_information: 'rabbit ears'
 show_sun_elevation: true
 show_pass_direction: true
 produce_spectrogram: true
 
 noaa_crop_telemetry: false
-produce_noaa_pristine_image: false
-produce_noaa_pristine_histogram: false
-noaa_daytime_enhancements: 'MSA MSA-precip MCIR MCIR-precip HVC-precip HVCT-precip HVC HVCT ZA therm sea CC HE HF MD BD MB JF JJ LC TA WV NO histeq'
-noaa_nighttime_enhancements: 'MCIR MCIR-precip HVCT ZA therm NO TA sea histeq'
+produce_noaa_pristine_image: true
+produce_noaa_pristine_histogram: true
+noaa_daytime_enhancements: 'ZA MCIR MCIR-precip MSA MSA-precip HVCT HVCT-precip NO sea therm avi'
+noaa_nighttime_enhancements: 'ZA MCIR MCIR-precip NO sea therm avi'
 noaa_crop_toptobottom: false
-noaa_interpolate: false
-noaa_jpg_image_quality: 90
+noaa_interpolate: true
+noaa_jpg_image_quality: 100
 noaa_thermal_temp_overlay: true
-noaa_thermal_temp_overlay_location: 'NorthEast'
+noaa_thermal_temp_overlay_location: 'West'
 noaa_map_crosshair_enable: true
-noaa_map_crosshair_color: "0xcc3030"
-noaa_map_grid_degrees: 10.0
+noaa_map_crosshair_color: "0xffff00"
+noaa_map_grid_degrees: 0.0
 noaa_map_grid_color: "0xff0000"
 noaa_map_country_border_enable: true
 noaa_map_country_border_color: "0xffff00"
@@ -205,16 +214,17 @@ noaa_map_state_border_color: "0xffff00"
 wxtoimg_map_offset: 10.5                    #Change this value only if you see map offsets from the ground on WXtoImg NOAA images
 
 flip_meteor_image: true
-meteor_jpg_image_quality: 90
+meteor_jpg_image_quality: 100
+satdump_image_scaling_factor: 1
 meteor_draw_map_overlay: true
 meteor_draw_cities: true
 meteor_map_crosshair_enable: true
-meteor_map_crosshair_color: "#CC3030"
+meteor_map_crosshair_color: "#FFFF00"
 meteor_map_country_border_color: "#FFFF00"
 meteor_create_rain_probability_overlay: true
 meteor_create_equidistant_projection: true
 meteor_create_mercator_projection: false
-meteor_create_spreaded_images_without_overlay: true
+meteor_create_spreaded_images_without_overlay: false
 
 # web server configuration settings
 #   web_server_name - server name to use for the TLS certs and web endpoint - this MUST be
@@ -235,12 +245,13 @@ meteor_create_spreaded_images_without_overlay: true
 #                            https://www.php.net/manual/en/datetime.format.php or else bad things will happen
 #   web_datetime_format - format to display date and time in the web interface for captures - note that this MUST conform to
 #                         https://www.php.net/manual/en/datetime.format.php or else bad things will happen
-web_server_name: raspberry-noaa.localdomain
+#web_server_name: raspberry-noaa.localdomain
+web_server_name: 10.0.0.151
 enable_non_tls: true
-web_port: 80
+web_port: 8080
 enable_tls: false
 web_tls_port: 443
-lock_admin_page: true
+lock_admin_page: false
 admin_username: 'admin'
 admin_password: 'admin'
 web_passes_date_format: 'm/d/Y'
@@ -258,7 +269,7 @@ enable_satvis: true
 # whether to enable the image video in the passes view - note that this
 # is by default disabled on "extra-small" devices such as phones due
 # to the processing and space requirements
-enable_animation: false
+enable_animation: true
 
 # operating system configurations
 #   disable_wifi_power_mgmt - if running wireless internet and you want to
@@ -291,16 +302,15 @@ contribute_to_community_composites_url: 'https://voxgalactica.com/upload'
 enable_email_push: false
 email_push_address: test@ifttt.com
 enable_email_schedule_push: false
-enable_discord_push: true
-discord_noaa_webhook_url: 'https://discord.com/api/webhooks/1135901731918717068/ZELG3Sv1fRxQ8KgoYtMMOBYM07az0yIkzeLdad-8WxxhV-F8LhPQdZFFon044awMvLsD'
-discord_meteor_webhook_url: 'https://discord.com/api/webhooks/1135901731918717068/ZELG3Sv1fRxQ8KgoYtMMOBYM07az0yIkzeLdad-8WxxhV-F8LhPQdZFFon044awMvLsD'
+enable_discord_push: false
+discord_noaa_webhook_url: ''
+discord_meteor_webhook_url: ''
 enable_pushover_push: false
 pushover_link_url: 'https://<url-to-webpanel>/captures/listImages'
 pushover_apitoken: ''
 pushover_user: ''
 pushover_prio: 0
 enable_twitter_push: false
-enable_mastodon_push: false
 enable_facebook_push: false
 enable_instagram_push: false
 enable_slack_push: false
@@ -308,4 +318,5 @@ slack_push_url: ''
 slack_push_to: ''
 slack_link: 'https://XXXX/captures/listImages'
 enable_matrix_push: false
+enable_mastodon_push: false
 ...

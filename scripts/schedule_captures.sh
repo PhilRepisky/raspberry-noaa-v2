@@ -18,37 +18,58 @@
 # map inputs to sane var names
 OBJ_NAME=$1
 RECEIVE_SCRIPT=$2
-TLE_FILE=$3
+#TLE_FILE="../tmp/weather.txt"
+#"$3"
 START_TIME_MS=$4
 END_TIME_MS=$5
 
 if [ "$OBJ_NAME" == "NOAA 15" ]; then
   SAT_MIN_ELEV=$NOAA_15_SAT_MIN_ELEV
+  TLE_FILE="../tmp/weather.txt"
 fi
 if [ "$OBJ_NAME" == "NOAA 18" ]; then
   SAT_MIN_ELEV=$NOAA_18_SAT_MIN_ELEV
+  TLE_FILE="../tmp/weather.txt"
 fi
 if [ "$OBJ_NAME" == "NOAA 19" ]; then
   SAT_MIN_ELEV=$NOAA_19_SAT_MIN_ELEV
+  TLE_FILE="../tmp/weather.txt"
 fi
 if [ "$OBJ_NAME" == "METEOR-M 2" ]; then
   SAT_MIN_ELEV=$METEOR_M2_3_SAT_MIN_ELEV
+  TLE_FILE="../tmp/orbit.tle"
 fi
 if [ "$OBJ_NAME" == "METEOR-M2 3" ]; then
   SAT_MIN_ELEV=$METEOR_M2_3_SAT_MIN_ELEV
+  TLE_FILE="../tmp/orbit.tle"
 fi
 if [ "$OBJ_NAME" == "METEOR-M2 4" ]; then
   SAT_MIN_ELEV=$METEOR_M2_4_SAT_MIN_ELEV
+  TLE_FILE="../tmp/orbit.tle"
 fi
+
+echo "$OBJ_NAME"
+echo "$TLE_FILE"
 
 # come up with prediction start/end timings for pass
 predict_start=$($PREDICT -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | head -1)
 predict_end=$($PREDICT   -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | tail -1)
+echo "predict end $predict_end"
+echo "predict $PREDICT"
+echo "TLE FLE $TLE_FILE"
+echo "obj name $OBJ_NAME"
+echo "start time $START_TIME_MS"
 max_elev=$($PREDICT      -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | awk -v max=0 '{if($5>max){max=$5}}END{print max}')
+echo "max_elev $max_elev"
+#max_elev=60
+
+echo "max_elev $max_elev"
 azimuth_at_max=$($PREDICT   -t $TLE_FILE -p "${OBJ_NAME}" "${START_TIME_MS}" | awk -v max=0 -v az=0 '{if($5>max){max=$5;az=$6}}END{print az}')
 end_epoch_time=$(echo "${predict_end}" | cut -d " " -f 1)
+echo "end epoch $end_epoch_time ? time"
 starting_azimuth=$(echo "${predict_start}" | awk '{print $6}')
 
+echo "date time $(date --date="${end_epoch_time}")"
 # get and schedule passes for user-defined days
 while [ "$(date --date="@${end_epoch_time}" +"%s")" -le "${END_TIME_MS}" ]; do
   start_datetime=$(echo "$predict_start" | cut -d " " -f 3-4)
@@ -75,6 +96,7 @@ while [ "$(date --date="@${end_epoch_time}" +"%s")" -le "${END_TIME_MS}" ]; do
   fi
 
   # schedule capture if elevation is above configured minimum
+  #echo "max elev line 86 $max_elev"
   if [ "${max_elev}" -gt "${SAT_MIN_ELEV}" ] && [ "${schedule_enabled_by_sun_elev}" -eq "1" ]; then
     direction="null"
 
@@ -103,6 +125,7 @@ while [ "$(date --date="@${end_epoch_time}" +"%s")" -le "${END_TIME_MS}" ]; do
                                                               ${start_epoch_time} ${timer} ${max_elev} ${direction} ${pass_side}" \
                 | at "$(date --date="TZ=\"UTC\" ${start_datetime}" +"%H:%M %D")" ${mail_arg} 2>&1)
 
+    #echo "${NOAA_HOME}/scripts/${RECEIVE_SCRIPT}                 \"${OBJ_NAME}\" ${safe_obj_name}-${file_date_ext} ${TLE_FILE} \                                                                            ${start_epoch_time} ${timer} ${max_elev} ${direction} ${pass_side}" \| at "$(date --date="TZ=\"UTC\" ${start_datetime}" +"%H:%M    %D")"
     # attempt to capture the job id if job scheduling succeeded
     at_job_id=$(echo $job_output | sed -n 's/.*job \([0-9]\+\) at.*/\1/p')
     if [ -z "${at_job_id}" ]; then

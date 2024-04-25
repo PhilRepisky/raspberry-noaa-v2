@@ -35,7 +35,7 @@ if [ "${NOAA_INTERPOLATE}" == "true" ]; then
 fi
 
 # produce the output image
-$WXTOIMG -o -M 49 -m "${MAP_OVERLAY}" ${extra_args} -e "MCIR" "${INPUT_WAV}" "${OUTPUT_IMAGE}"
+$WXTOIMG -o -M 49 -m "${MAP_OVERLAY}" ${extra_args} -e "MCIR-precip" "${INPUT_WAV}" "${OUTPUT_IMAGE}"
 
 # convert updated AVI to web-display ready mp4
 # ffmpeg -i ${OUTPUT_IMAGE} -c:v libx264 -c:a copy -y /srv/images/RollingAnimation.mp4
